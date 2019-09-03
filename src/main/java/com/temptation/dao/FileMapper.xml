@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"   
+		"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.temptation.dao.FileMapper">
+	<select id="queryFiles" parameterType="int" resultType="com.temptation.pojo.FileUpload">
+		SELECT * FROM `fileUpload` WHERE `filetype`=#{filetype}
+	</select>
+
+	<insert id="addFile" parameterType="com.temptation.pojo.FileUpload">
+		INSERT INTO `fileUpload`(`filename`,`fileurl`,`username`,`filetype`)
+		VALUES(#{filename},#{fileurl},#{username},#{filetype})
+	</insert>
+	
+	<delete id="delFile" parameterType="int">
+		DELETE FROM `fileupload` WHERE fid=#{fid}	
+	</delete>
+</mapper>		

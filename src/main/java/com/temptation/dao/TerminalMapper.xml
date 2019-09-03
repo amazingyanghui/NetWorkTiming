@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"   
+		"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.temptation.dao.TerminalMapper">
+
+	<resultMap type="com.temptation.pojo.Terminal" id="terMap">
+		<result column="tid" jdbcType="INTEGER" property="tid" />
+		<result column="equipment" jdbcType="INTEGER"
+			property="equipment" />
+		<result column="timemode" jdbcType="VARCHAR"
+			property="timemode" />
+		<result column="Ipaddress" jdbcType="VARCHAR"
+			property="Ipaddress" />
+		<result column="Macaddress" jdbcType="VARCHAR"
+			property="Macaddress" />
+		<result column="devicestauts" jdbcType="INTEGER"
+			property="devicestauts" />
+		<result column="timingcycle" jdbcType="INTEGER"
+			property="timingcycle" />
+		<result column="centreno" jdbcType="VARCHAR"
+			property="centreno" />
+		<result column="location" jdbcType="VARCHAR"
+			property="location" />
+		<result column="display" jdbcType="INTEGER" property="display" />
+		<result column="mid" jdbcType="INTEGER" property="mid" />
+		<result column="gid" jdbcType="INTEGER" property="gid" />
+		<association property="listManagement"
+			javaType="com.temptation.pojo.ListManagement">
+			<result column="id" property="id" />
+			<result column="name" property="name" />
+		</association>
+	</resultMap>
+	
+	<resultMap type="com.temptation.pojo.Terminal" id="terMap2">
+		<result column="tid" jdbcType="INTEGER" property="tid" />
+		<result column="equipment" jdbcType="INTEGER"
+			property="equipment" />
+		<result column="timemode" jdbcType="VARCHAR"
+			property="timemode" />
+		<result column="Ipaddress" jdbcType="VARCHAR"
+			property="Ipaddress" />
+		<result column="Macaddress" jdbcType="VARCHAR"
+			property="Macaddress" />
+		<result column="devicestauts" jdbcType="INTEGER"
+			property="devicestauts" />
+		<result column="timingcycle" jdbcType="INTEGER"
+			property="timingcycle" />
+		<result column="centreno" jdbcType="VARCHAR"
+			property="centreno" />
+		<result column="location" jdbcType="VARCHAR"
+			property="location" />
+		<result column="display" jdbcType="INTEGER" property="display" />
+		<result column="mid" jdbcType="INTEGER" property="mid" />
+		<result column="gid" jdbcType="INTEGER" property="gid" />
+		<association property="groupManagement"
+			javaType="com.temptation.pojo.GroupManagement">
+			<result column="id" property="id" />
+			<result column="name" property="name" />
+		</association>
+	</resultMap>
+	
+	
+	<select id="queryTerminals" resultMap="terMap">
+		SELECT
+		t.`tid`,t.`devicestauts`,t.`timingcycle`,t.`location`,t.`display`,lm.`id`,lm.`name`
+		FROM
+		`terminal` t INNER JOIN `list_management` lm ON lm.`id`=t.`mid` 
+		<if test="map.pageNo!=null  and map.limit!=null ">
+			LIMIT #{map.pageNo},#{map.limit}
+		</if>
+	</select>
+
+	<select id="queryTerminalsByDevicestauts"
+		resultType="com.temptation.pojo.Terminal"
+		parameterType="java.lang.Integer">
+		SELECT * FROM terminal
+		<if test="stage==2">
+			where devicestauts=1
+		</if>
+		<if test="stage==3">
+			where (devicestauts=2 or devicestauts=3)
+		</if>
+	</select>
+
+	<select id="queryInfoById"
+		resultType="com.temptation.pojo.Terminal">
+		SELECT * FROM terminal where tid=#{tid}
+	</select>
+
+	<delete id="deleteTerminalById">
+		DELETE FROM terminal where tid=#{id}
+	</delete>
+
+	<insert id="addTerminal"
+		parameterType="com.temptation.pojo.Terminal">
+		insert into terminal
+		(equipment,timemode,Ipaddress,Macaddress,devicestauts,timingcycle,centreno,location,display,mid,gid)
+		VALUES(#{equipment},#{timemode},#{Ipaddress},#{Macaddress},'1',#{timingcycle},#{centreno},#{location},#{display},#{mid},#{gid})
+	</insert>
+
+	<update id="updateTerminalById"
+		parameterType="com.temptation.pojo.Terminal">
+		UPDATE terminal SET
+		equipment=#{equipment},timemode=#{timemode},Ipaddress=#{Ipaddress},Macaddress=#{Macaddress},timingcycle=#{timingcycle},centreno=#{centreno},location=#{location},display=#{display}
+		where tid=#{tid}
+	</update>
+
+	<select id="queryTerminalsByParentId"  resultMap="terMap">
+		select t.*,m.name from terminal t left join list_management m on t.mid=m.id where t.mid in(select id from list_management where parent_id in (select id from list_management where parent_id in (select id from list_management where parent_id=#{id})) )
+		union all
+		select t.*,m.name from terminal t left join list_management m on t.mid=m.id where t.mid in(select id from list_management where parent_id in (select id from list_management where parent_id=#{id})) 
+		union all
+		select t.*,m.name from terminal t left join list_management m on t.mid=m.id where t.mid in (select id from list_management where parent_id=#{id})
+	</select>
+	
+	<select id="selectTerminalsByParentId"  resultMap="terMap2">
+		select t.*,g.name from terminal t left join group_management g on t.gid=g.id where t.gid in(select id from group_management where parent_id in (select id from group_management where parent_id in (select id from group_management where parent_id=#{id})) )
+		union all
+		select t.*,g.name from terminal t left join group_management g on t.gid=g.id where t.gid in(select id from group_management where parent_id in (select id from group_management where parent_id=#{id})) 
+		union all
+		select t.*,g.name from terminal t left join group_management g on t.gid=g.id where t.gid in (select id from group_management where parent_id=#{id})
+	</select>
+	
+	<select id="queryTerminalIdByMid" parameterType="long" resultType="long">
+		select tid from terminal where mid=#{id}
+	</select>
+	
+	<update id="updateManagementIsHT">
+		update list_management set isHaveTerminal=#{IsHTValue} where id=#{mid}
+	</update>
+	
+	<update id="updateGroupIsHT">
+		update group_management set isHaveTerminal=#{IsHTValue} where id=#{gid}
+	</update>
+</mapper>

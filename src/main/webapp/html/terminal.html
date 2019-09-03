@@ -1,0 +1,742 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>终端状态</title>
+		<meta charset="UTF-8">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="../layui/css/layui.css" media="all">
+		<link rel="stylesheet" type="text/css" href="../css/log.css">
+		<script src="../layui/layui.all.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../layui/jquery.min.js"></script>
+		<script src="../js/bootstrap.min.js"></script>
+		<link href="../css/bootstrap.css" rel="stylesheet" type="text/css">
+		<script src="../js/terminal.js"></script>
+	</head>
+	<body>
+
+
+	<div style="height: auto">
+		<table>
+			<tr>
+				<td><img src="../image/logo.png" style="height:80px; weight:240px;"></td>
+				<td><img src="../image/log_banner.png" style="height:100px; weight:240px;"></td>
+				<td><img src="../image/logo_bj.png" style="height:40px; weight:90px;margin: 25px"></td>
+				<td><img id="updatePwdImg" src="../image/setup.png" style="height:40px; weight:70px;"></td>
+				<td><img id="identityImg" src="../image/login.png" style="height:40px; weight:90px;margin: 15px;margin: 25px;" title=""></td>
+				<td><img id="signOutImg" src="../image/signout.png" style="height:35px; weight:90px;margin: 10px"></td>
+			</tr>
+		</table>
+	</div>
+
+
+	<ul class="layui-nav layui-bg-cyan">
+		<li class="layui-nav-item">
+			<a href="javascript:;">时钟管理</a>
+			<dl class="layui-nav-child">
+				<dd style="line-height: 35px;"><a href="../terminal/toterminal">终端设置</a></dd>
+				<dd style="line-height: 35px;"><a href="../terminal/torunstate">运行状态</a></dd>
+				<dd style="line-height: 35px;"><a href="../monitoring/toMonitoringLog">监控日志</a></dd>
+			</dl>
+		</li>
+
+		<li class="layui-nav-item">
+			<a href="javascript:;">打铃授时</a>
+			<dl class="layui-nav-child">
+				<dd style="line-height: 35px;"><a href="../ringingTask/totimestate">打铃状态</a></dd>
+				<dd style="line-height: 35px;"><a href="../ringingTask/totask">网络任务</a></dd>
+			</dl>
+		</li>
+
+		<li class="layui-nav-item">
+			<a href="javascript:;"><a href="../information/toinfomationList">信息发布</a></a>
+		</li>
+
+		<li class="layui-nav-item">
+			<a href="javascript:;"><a href="">实时采播</a></a>
+		</li>
+
+		<li class="layui-nav-item">
+			<a href="javascript:;"><a href="">文件播放</a></a>
+		</li>
+
+		<li class="layui-nav-item">
+			<a href="javascript:;">系统设置</a>
+			<dl class="layui-nav-child">
+				<dd style="line-height: 35px;"><a href="../grouplist/tolistmanagement">区域维护</a></dd>
+				<dd style="line-height: 35px;"><a href="../login/toaccountmanagement">账户管理</a></dd>
+				<dd style="line-height: 35px;"><a href="../parameter/toparameter">参数配置</a></dd>
+				<dd style="line-height: 35px;"><a href="">文件管理</a></dd>
+				<dd style="line-height: 35px;"><a href="../grouplist/togroupmanagement">分组管理</a></dd>
+				<dd style="line-height: 35px;"><a href="../sign/tolog">系统日志</a></dd>
+			</dl>
+		</li>
+	</ul>
+
+
+		<!--正文内容-->
+		<div>
+			<div style="float: left;margin: 20px 40px 20px">
+				<div class="layui-tab">
+				<ul class="layui-tab-title">
+					<li class="layui-this">列表</li>
+					<li>分组</li>
+				</ul>
+				<div class="layui-tab-content">
+					<div class="layui-tab-item layui-show" >
+						<ul id="tree"></ul>
+					</div>
+					<div class="layui-tab-item"><ul id="group"></ul></div>
+				</div>
+				</div>
+			</div>
+
+		<div style="float: right;margin: 10px 40px 10px 10px">
+			<div>
+				<div>
+					<input type="button" value="新增" class="layui-btn layui-bg-blue" data-toggle="modal" data-target="#addModal">
+					<input type="button" value="编辑" class="layui-btn layui-bg-green" onclick="selectMaintens()">
+					<input type="button" value="删除" class="layui-btn layui-bg-red" onclick="deleteTerminal()">
+
+					<input type="hidden" id="select"  data-toggle="modal" data-target="#updateModal">
+					<input type="hidden" id="delete"  data-toggle="modal" data-target="#deleteModal">
+				</div>
+			</div>
+			<ul id="demoTree"></ul>
+			<div >
+				<table class="layui-hide" id="demo" lay-filter="test">
+
+				</table>
+			</div>
+			<script type="text/html" id="barDemo">
+				<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+			    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+			    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+			</script>
+		</div>
+		</div>
+
+		<input type="hidden" id="updatePwd"  data-toggle="modal" data-target="#updatePwdModal">
+		<!--修改密码 模态框（Modal） -->
+		<div class="modal fade" id="updatePwdModal" tabindex="-1" role="dialog" aria-labelledby="updatePwdModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="updatePwdModalLabel">修改密码</h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal" id="unfrm">
+							
+							<div class="form-group required">
+								<label class="control-label col-sm-4">原密码：</label>
+								<div class="col-sm-6">
+									<input id="unpassword" type="password" class="form-control">
+								</div>
+							</div>
+							
+							<div class="form-group required">
+								<label class="control-label col-sm-4">新密码：</label>
+								<div class="col-sm-6">
+									<input id="unnewPassword" type="password" class="form-control">
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+						<button type="button" class="btn btn-primary" onclick="updatePwd()">修改</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!--增加 模态框（Modal） -->
+		<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="addModalLabel">终端设置-新增</h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal" id="frm">
+							<div class="form-group required">
+								<label class="control-label col-sm-4">设备编号：</label>
+								<div class="col-sm-6">
+									<input id="equipment" type="text" class="form-control">
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">授时方式：</label>
+								<div class="col-sm-6">
+									<input id="timemode" type="text" class="form-control" >
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">ip地址：</label>
+								<div class="col-sm-6">
+									<input id="Ipaddress" type="text" class="form-control">
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">Mac地址：</label>
+								<div class="col-sm-6">
+									<input id="Macaddress" type="text" class="form-control" >
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">授时周期：</label>
+								<div class="col-sm-6">
+									<input id="timingcycle" type="text" class="form-control" >
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">考场编号：</label>
+								<div class="col-sm-6">
+									<input id="centreno" type="text" class="form-control" >
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">所在区域：</label>
+								<div class="col-sm-6">
+									<input id="location" type="text" class="form-control" >
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">显示模式：</label>
+								<div class="col-sm-6">
+									<select name="display" id="display" class="form-control" style="width: 150px;">
+										<option value="1" style="font-size: 15px;">单屏</option>
+										<option value="2" style="font-size: 15px;">组合</option>
+										<option value="3" style="font-size: 15px;">其他</option>
+									</select>
+								</div>
+							</div>
+							
+							<div class="form-group required">
+								<div class="col-sm-3" style="margin-left: 80px">
+									<input type="button" value="添加区域" class="layui-btn layui-bg-green" data-toggle="modal" data-target="#addLocationModal">
+								</div>
+								<div id="locationDiv" class="col-sm-2" style="margin-left: -20px">
+									
+								</div>
+								
+								<div class="col-sm-3" style="margin-left: 50px">
+									<input type="button" value="添加分组" class="layui-btn layui-bg-green" data-toggle="modal" data-target="#addGroupModal">
+								</div>
+								<div id="groupDiv" class="col-sm-2" style="margin-left: -20px">
+									
+								</div>
+							</div>
+							
+							
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button id="addReturn" type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+						<button type="button" class="btn btn-primary" onclick="addMaintens()">保存</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- 添加区域模态框 -->
+		<div class="modal fade" id="addLocationModal" tabindex="-1" role="dialog" aria-labelledby="addLocationModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="addLocationModalLabel">区域列表</h4>
+					</div>
+					<div class="modal-body">
+						<div style="float: left">
+						<ul id="locationTree"></ul>
+						</div>
+						<div style="margin-left: 175px">
+						<table class="layui-hide" id="locationTable" lay-filter="test">
+						</table>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<a id="return" type="button" class="btn btn-default" data-dismiss="modal">返回</a>
+						<button type="button" class="btn btn-primary" onclick="addLocation()">保存</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- 添加分组模态框 -->
+		<div class="modal fade" id="addGroupModal" tabindex="-1" role="dialog" aria-labelledby="addGroupModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="addGroupModalLabel">分组列表</h4>
+					</div>
+					<div class="modal-body">
+						<div style="float: left">
+						<ul id="groupTree"></ul>
+						</div>
+						<div style="margin-left: 155px">
+						<table class="layui-hide" id="groupTable" lay-filter="test">
+						</table>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<a id="return2" type="button" class="btn btn-default" data-dismiss="modal">返回</a>
+						<button type="button" class="btn btn-primary" onclick="addGroup()">保存</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!--修改 模态框（Modal） -->
+		<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="updateModalLabel">终端设置-编辑</h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal" id="unfrm">
+							<div class="form-group required">
+								<label class="control-label col-sm-4">设备编号：</label>
+								<div class="col-sm-6">
+									<input id="reequipment" type="text" class="form-control">
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">授时方式：</label>
+								<div class="col-sm-6">
+									<input id="retimemode" type="text" class="form-control" >
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">ip地址：</label>
+								<div class="col-sm-6">
+									<input id="reIpaddress" type="text" class="form-control">
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">Mac地址：</label>
+								<div class="col-sm-6">
+									<input id="reMacaddress" type="text" class="form-control" >
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">授时周期：</label>
+								<div class="col-sm-6">
+									<input id="retimingcycle" type="text" class="form-control" >
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">考场编号：</label>
+								<div class="col-sm-6">
+									<input id="recentreno" type="text" class="form-control" >
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">所在区域：</label>
+								<div class="col-sm-6">
+									<input id="relocation" type="text" class="form-control" >
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">显示模式：</label>
+								<div class="col-sm-6">
+									<select  id="redisplay" class="form-control" style="width: 150px;">
+										<option value="1" style="font-size: 15px;" name="redisplay">单屏</option>
+										<option value="2" style="font-size: 15px;" name="redisplay">组合</option>
+										<option value="3" style="font-size: 15px;" name="redisplay">其他</option>
+									</select>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+						<button type="button" class="btn btn-primary" onclick="updateMaintens()">保存</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!--删除 模态框（Modal） -->
+		<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="deleteModalLabel">终端设置-删除</h4>
+					</div>
+					<div class="modal-body">
+							<div class="form-group required">
+								<label class="control-label ">确定要删除这些终端吗？</label>
+							</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+						<button type="button" class="btn btn-primary" onclick="deleteMaintens()">确定</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+	<script>
+		//模态框关闭时清除表单数据
+        $('#addModal').on('hidden.bs.modal', function (){
+            document.getElementById("frm").reset();   
+        });
+		
+		$("#addReturn").click(function(){
+			$("#locationDiv").empty();
+			$("#groupDiv").empty();
+		})
+
+        queryListManagement();
+
+         queryGroupManagement();
+
+        function queryListManagement() {
+            $.ajax({
+                type: "post",
+                url:'../grouplist/queryListManagement',
+                dataType: 'json',
+                success: function (d) {
+                    layui.use(['tree', 'layer','table'], function() {
+                        var layer = layui.layer,
+                            table = layui.table //表格
+                            , $ = layui.jquery;
+                        //列表
+                        layui.tree({
+                            elem: '#tree' //指定元素
+                            , target: '_blank' //是否新选项卡打开（比如节点返回href才有效）
+                            , click: function (item) { //点击节点回调
+                            	
+                                 //layer.msg('当前节名称：' + item.name + '<br>全部参数：' + JSON.stringify(item));
+                                //$("#listManagementid").val(item.id)
+                                //console.log($("#listManagementid").val())
+                                //执行重载
+                                table.reload('demo', {
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                    , where: {//这里传参  向后台
+                                        parentId: item.id
+                                        //可传多个参数到后台...  ，分隔
+                                    }
+                                    , url: '../terminal/queryTerminalsByParentId'//后台做模糊搜索接口路径
+                                    , method: 'post'
+                                });
+                            }
+                            , nodes: convert(d)
+                        });
+                    })
+                }
+            })
+        }
+        //分组
+        function queryGroupManagement() {
+        	$.ajax({
+                type: "post",
+                url:'../grouplist/queryGroupManagement',
+                dataType: 'json',
+                success: function (d) {
+                    layui.use(['tree', 'layer','table'], function() {
+                        var layer = layui.layer,
+                            table = layui.table //表格
+                            , $ = layui.jquery;
+                        //列表
+                        layui.tree({
+                            elem: '#group' //指定元素
+                            , target: '_blank' //是否新选项卡打开（比如节点返回href才有效）
+                            , click: function (item) { //点击节点回调
+                            	
+                                 //layer.msg('当前节名称：' + item.name + '<br>全部参数：' + JSON.stringify(item));
+                                //$("#listManagementid").val(item.id)
+                                //console.log($("#listManagementid").val())
+                                //执行重载
+                                table.reload('demo', {
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                    , where: {//这里传参  向后台
+                                        parentId: item.id
+                                        //可传多个参数到后台...  ，分隔
+                                    }
+                                    , url: '../terminal/selectTerminalsByParentId'//后台做模糊搜索接口路径
+                                    , method: 'post'
+                                });
+                            }
+                            , nodes: convert(d)
+                        });
+                    })
+                }
+            })
+        }
+
+        function convert(rows) {
+            function exists(rows, parentId) {
+                for (var i = 0; i < rows.length; i++) {
+                    if (rows[i].id == parentId && parentId!=null) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            var nodes = [];
+            // get the top level nodes
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                if (!exists(rows, row.parentId)) {
+                    nodes.push({
+                        id: row.id,
+                        name: row.name,
+                        parentId: row.parentId,
+                        children:row.children,
+                    });
+                }
+            }
+            var toDo = [];
+            for (var i = 0; i < nodes.length; i++) {
+                toDo.push(nodes[i]);
+            }
+            while (toDo.length) {
+                var node = toDo.shift();   // the parent node
+                // get the children nodes
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i];
+                    if (row.parentId == node.id) {//这里修改自己需要的属性
+                        var child = {id: row.id, name: row.name+(row.remark=='stop'?'<span style="color:darkgray">(停运)</span>':''), parentId: node.id, remark: row.remark,parentName: node.name};
+                        if (node.children) {
+                            node.children.push(child);
+                        } else {
+                            node.children = [child];
+                        }
+                        toDo.push(child);
+                    }
+                }
+            }
+            return nodes;//layui nodes对象
+        }
+
+	</script>
+
+	<script type="text/html" id="timo1">
+		{{#  if(d.devicestauts == 1){ }}
+		<span>正常</span>
+		{{# }else if(d.devicestauts == 2){  }}
+		<span>离线</span>
+		{{# }else{  }}
+		<span>ip冲突</span>
+		{{# } }}
+	</script>
+
+	<script type="text/html" id="timo2">
+		{{#  if(d.display == 1){ }}
+		<span>单屏</span>
+		{{# }else if(d.display == 2){  }}
+		<span>组合</span>
+		{{# }else{  }}
+		<span>其他</span>
+		{{# } }}
+	</script>
+	
+		<script type="text/html" id="templet1">
+		{{#  if(d.isHaveTerminal == 0){ }}
+		<span>否</span>
+		{{# }else{  }}
+		<span>是</span>
+		{{# } }}
+
+	</script>
+
+	<script>
+		
+
+
+        queryListManagement();
+
+         queryGroupManagement();
+
+        function queryListManagement() {
+            $.ajax({
+                type: "post",
+                url:'../grouplist/queryListManagement',
+                dataType: 'json',
+                success: function (d) {
+                    layui.use(['tree', 'layer','table'], function() {
+                        var layer = layui.layer,
+                            table = layui.table //表格
+                            , $ = layui.jquery;
+                        //列表
+                        layui.tree({
+                            elem: '#locationTree' //指定元素
+                            , target: '_blank' //是否新选项卡打开（比如节点返回href才有效）
+                            , click: function (item) { //点击节点回调
+                            	
+                                 //layer.msg('当前节名称：' + item.name + '<br>全部参数：' + JSON.stringify(item));
+                                //$("#listManagementid").val(item.id)
+                                //console.log($("#listManagementid").val())
+                                //执行重载
+                                table.reload('locationTable', {
+                                    page:false
+                                    , where: {//这里传参  向后台
+                                        parentId: item.id
+                                        //可传多个参数到后台...  ，分隔
+                                    }
+                                    , url: '../grouplist/queryManagementByParentId'//后台做模糊搜索接口路径
+                                    , method: 'post'
+                                    , templet: 'templet1'
+                                });
+                            }
+                            , nodes: convert(d)
+                        });
+                    })
+                }
+            })
+        }
+        //分组
+        function queryGroupManagement() {
+        	$.ajax({
+                type: "post",
+                url:'../grouplist/queryGroupManagement',
+                dataType: 'json',
+                success: function (d) {
+                    layui.use(['tree', 'layer','table'], function() {
+                        var layer = layui.layer,
+                            table = layui.table //表格
+                            , $ = layui.jquery;
+                        //列表
+                        layui.tree({
+                            elem: '#groupTree' //指定元素
+                            , target: '_blank' //是否新选项卡打开（比如节点返回href才有效）
+                            , click: function (item) { //点击节点回调
+                            	
+                                 //layer.msg('当前节名称：' + item.name + '<br>全部参数：' + JSON.stringify(item));
+                                //$("#listManagementid").val(item.id)
+                                //console.log($("#listManagementid").val())
+                                //执行重载
+                                table.reload('groupTable', {
+                                    page: false
+                                    , where: {//这里传参  向后台
+                                        parentId: item.id
+                                        //可传多个参数到后台...  ，分隔
+                                    }
+                                    , url: '../grouplist/queryGroupByParentId'//后台做模糊搜索接口路径
+                                    , method: 'post'
+                                    , templet:'#templet1'
+                                });
+                            }
+                            , nodes: convert(d)
+                        });
+                    })
+                }
+            })
+        }
+
+        function convert(rows) {
+            function exists(rows, parentId) {
+                for (var i = 0; i < rows.length; i++) {
+                    if (rows[i].id == parentId && parentId!=null) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            var nodes = [];
+            // get the top level nodes
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                if (!exists(rows, row.parentId)) {
+                    nodes.push({
+                        id: row.id,
+                        name: row.name,
+                        parentId: row.parentId,
+                        children:row.children,
+                    });
+                }
+            }
+            var toDo = [];
+            for (var i = 0; i < nodes.length; i++) {
+                toDo.push(nodes[i]);
+            }
+            while (toDo.length) {
+                var node = toDo.shift();   // the parent node
+                // get the children nodes
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i];
+                    if (row.parentId == node.id) {//这里修改自己需要的属性
+                        var child = {id: row.id, name: row.name+(row.remark=='stop'?'<span style="color:darkgray">(停运)</span>':''), parentId: node.id, remark: row.remark,parentName: node.name};
+                        if (node.children) {
+                            node.children.push(child);
+                        } else {
+                            node.children = [child];
+                        }
+                        toDo.push(child);
+                    }
+                }
+            }
+            return nodes;//layui nodes对象
+        }
+
+	</script>
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("#updatePwdImg").click(function(){
+				$("#updatePwd").trigger("click");
+			})
+			
+			$.ajax({
+				type:'post',
+				url:'../sign/getIdentity',
+				data:{},
+				success:function(result){
+					$("#identityImg").attr("title",result.identity);
+				},
+				error:function(){
+					layer.msg("ajax错误");
+				}
+			})
+		});
+		
+		$("#signOutImg").click(function(){
+			$.ajax({
+				type:'post',
+				url:'../sign/logout',
+				data:{},
+				success:function(result){
+					if(result.code==0){
+						layer.msg(result.msg);
+						location.href="../html/login.html"
+					}
+				},
+				error:function(){
+					layer.msg("退出失败");
+				}
+			})
+		});
+	</script>
+	</body>
+</html>

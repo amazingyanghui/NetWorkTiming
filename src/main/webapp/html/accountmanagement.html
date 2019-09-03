@@ -1,0 +1,469 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>账户管理</title>
+		<meta charset="UTF-8">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="../layui/css/layui.css" media="all">
+
+		<script src="../layui/layui.all.js" type="text/javascript"></script>
+		<script src="../layui/jquery.min.js" type="text/javascript"></script>
+		<script src="../js/bootstrap.min.js"></script>
+		<link href="../css/bootstrap.css" rel="stylesheet" type="text/css">
+
+			<link rel="stylesheet" href="../layui/css/common.css">
+			<link rel="stylesheet" href="../layui/css/modules/layer/default/layer.css" media="all">
+			<link rel="stylesheet" href="../module/treetable-lay/treetable.css" media="all">
+		<link rel="stylesheet" href="../module/treetable-lay/treetable.js" media="all">
+
+	</head>
+	<body>
+
+	<div style="height: auto">
+		<table>
+			<tr>
+				<td><img src="../image/logo.png" style="height:80px; weight:240px;"></td>
+				<td><img src="../image/log_banner.png" style="height:100px; weight:240px;"></td>
+				<td><img src="../image/logo_bj.png" style="height:40px; weight:90px;margin: 25px"></td>
+				<td><img id="updatePwdImg" src="../image/setup.png" style="height:40px; weight:70px;"></td>
+				<td><img id="identityImg" src="../image/login.png" style="height:40px; weight:90px;margin: 15px;margin: 25px;" title=""></td>
+				<td><img id="signOutImg" src="../image/signout.png" style="height:35px; weight:90px;margin: 10px"></td>
+			</tr>
+		</table>
+	</div>
+
+
+	<ul class="layui-nav layui-bg-cyan">
+		<li class="layui-nav-item">
+			<a href="javascript:;">时钟管理</a>
+			<dl class="layui-nav-child">
+				<dd style="line-height: 35px;"><a href="../terminal/toterminal">终端设置</a></dd>
+				<dd style="line-height: 35px;"><a href="../terminal/torunstate">运行状态</a></dd>
+				<dd style="line-height: 35px;"><a href="../monitoring/toMonitoringLog">监控日志</a></dd>
+			</dl>
+		</li>
+
+		<li class="layui-nav-item">
+			<a href="javascript:;">打铃授时</a>
+			<dl class="layui-nav-child">
+				<dd style="line-height: 35px;"><a href="../ringingTask/totimestate">打铃状态</a></dd>
+				<dd style="line-height: 35px;"><a href="../ringingTask/totask">网络任务</a></dd>
+			</dl>
+		</li>
+
+		<li class="layui-nav-item">
+			<a href="javascript:;"><a href="../information/toinfomationList">信息发布</a></a>
+		</li>
+
+		<li class="layui-nav-item">
+			<a href="javascript:;"><a href="">实时采播</a></a>
+		</li>
+
+		<li class="layui-nav-item">
+			<a href="javascript:;"><a href="">文件播放</a></a>
+		</li>
+
+		<li class="layui-nav-item">
+			<a href="javascript:;">系统设置</a>
+			<dl class="layui-nav-child">
+				<dd style="line-height: 35px;"><a href="../grouplist/tolistmanagement">区域维护</a></dd>
+				<dd style="line-height: 35px;"><a href="../login/toaccountmanagement">账户管理</a></dd>
+				<dd style="line-height: 35px;"><a href="../parameter/toparameter">参数配置</a></dd>
+				<dd style="line-height: 35px;"><a href="">文件管理</a></dd>
+				<dd style="line-height: 35px;"><a href="../grouplist/togroupmanagement">分组管理</a></dd>
+				<dd style="line-height: 35px;"><a href="../sign/tolog">系统日志</a></dd>
+			</dl>
+		</li>
+	</ul>
+
+		<!--正文内容-->
+		<div>
+		<div style="margin: 10px">
+			<div>
+				<div>
+					<input type="button" value="新增" class="layui-btn layui-bg-blue" data-toggle="modal" data-target="#addModal">
+					<input type="button" value="编辑" class="layui-btn layui-bg-success" onclick="selectMaintens()">
+					<input type="button" value="删除" class="layui-btn layui-bg-red" onclick="deleteUser()">
+                    <input type="button" value="责任教室" class="layui-btn layui-bg-primary" onclick="queryclass()">
+					<input type="hidden" id="select"  data-toggle="modal" data-target="#updateModal">
+					<input type="hidden" id="queryclass"  data-toggle="modal" data-target="#queryclassModal">
+					<input type="hidden" id="delete"  data-toggle="modal" data-target="#deleteModal">
+					<input type="hidden" id="updatePwd"  data-toggle="modal" data-target="#updatePwdModal">
+
+					<form id="selected" class="layui-form  x-so form-inline" style="float: right;">
+                        <div class="btn-group">
+                           <span>姓名：</span> <input type="text" class="form-control" id="selectname" name="selectname">
+                        </div>
+                        <div class="btn-group">
+                            <button id="search" class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>                        </div>
+                    </form>
+                </div>
+			</div>
+			<ul id="demoTree"></ul>
+			<div >
+				<table class="layui-hide" id="demo" lay-filter="test">
+
+				</table>
+			</div>
+			<script type="text/html" id="barDemo">
+				<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+			    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+			    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+			</script>
+		</div>
+		</div>
+		
+		<!--修改密码 模态框（Modal） -->
+		<div class="modal fade" id="updatePwdModal" tabindex="-1" role="dialog" aria-labelledby="updatePwdModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="updatePwdModalLabel">修改密码</h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal" id="unfrm">
+							
+							<div class="form-group required">
+								<label class="control-label col-sm-4">原密码：</label>
+								<div class="col-sm-6">
+									<input id="unpassword" type="password" class="form-control">
+								</div>
+							</div>
+							
+							<div class="form-group required">
+								<label class="control-label col-sm-4">新密码：</label>
+								<div class="col-sm-6">
+									<input id="unnewPassword" type="password" class="form-control">
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+						<button type="button" class="btn btn-primary" onclick="updatePwd()">修改</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!--增加 模态框（Modal） -->
+		<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="addModalLabel">账户管理-新增</h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal" id="frm">
+							<div class="form-group required">
+								<label class="control-label col-sm-4">用户名：</label>
+								<div class="col-sm-6">
+									<input id="username" type="text" class="form-control">
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">姓名：</label>
+								<div class="col-sm-6">
+									<input id="name" type="text" class="form-control" >
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">密码：</label>
+								<div class="col-sm-6">
+									<input id="password" type="text" class="form-control">
+								</div>
+							</div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">确认密码：</label>
+								<div class="col-sm-6">
+									<input id="repassword" type="text" class="form-control" >
+								</div>
+							</div>
+
+                            <div class="form-group required">
+                                <label class="control-label col-sm-4">角色：</label>
+                                <div class="col-sm-6">
+                                    <input id="role" type="text" class="form-control" >
+                                </div>
+                            </div>
+
+							<div class="form-group required">
+								<label class="control-label col-sm-4">权限：</label>
+								<div class="col-sm-6">
+                                    <input type="checkbox" value="1" name="add"><span>时钟管理</span>&nbsp;&nbsp;&nbsp;
+                                    <input type="checkbox" value="2" name="add"><span>打铃管理</span>&nbsp;&nbsp;&nbsp;
+                                    <input type="checkbox" value="3" name="add"><span>信息发布</span>
+                                </div>
+							</div>
+                            <div class="form-group required">
+                                <label class="control-label col-sm-4"></label>
+                                <div class="col-sm-6">
+                                    <input type="checkbox" value="4" name="add"><span>文件广播</span>&nbsp;&nbsp;&nbsp;
+                                    <input type="checkbox" value="5" name="add"><span>实时采播</span>&nbsp;&nbsp;&nbsp;
+                                    <input type="checkbox" value="6" name="add"><span>手机广播</span>
+                                </div>
+                            </div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+						<button type="button" class="btn btn-primary" onclick="addMaintens()">保存</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!--修改 模态框（Modal） -->
+		<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="updateModalLabel">账户管理-编辑</h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal" id="unfrm">
+                                <div class="form-group required">
+                                    <label class="control-label col-sm-4">用户名：</label>
+                                    <div class="col-sm-6">
+                                        <input id="unusername" type="text" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-group required">
+                                    <label class="control-label col-sm-4">姓名：</label>
+                                    <div class="col-sm-6">
+                                        <input id="unname" type="text" class="form-control" >
+                                    </div>
+                                </div>
+
+                                <div class="form-group required">
+                                    <label class="control-label col-sm-4">密码：</label>
+                                    <div class="col-sm-6">
+                                        <input id="unpassword" type="text" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-group required">
+                                    <label class="control-label col-sm-4">确认密码：</label>
+                                    <div class="col-sm-6">
+                                        <input id="unrepassword" type="text" class="form-control" >
+                                    </div>
+                                </div>
+
+                            <div class="form-group required">
+                                <label class="control-label col-sm-4">角色：</label>
+                                <div class="col-sm-6">
+                                    <input id="rerole" type="text" class="form-control" >
+                                </div>
+                            </div>
+
+                                <div class="form-group required">
+                                    <label class="control-label col-sm-4">权限：</label>
+                                    <div class="col-sm-6">
+                                        <input type="checkbox" value="1" name="update"><span>时钟管理</span>&nbsp;&nbsp;&nbsp;
+                                        <input type="checkbox" value="2" name="update"><span>打铃管理</span>&nbsp;&nbsp;&nbsp;
+                                        <input type="checkbox" value="3" name="update"><span>信息发布</span>
+                                    </div>
+                                </div>
+                                <div class="form-group required">
+                                    <label class="control-label col-sm-4"></label>
+                                    <div class="col-sm-6">
+                                        <input type="checkbox" value="4" name="update"><span>文件广播</span>&nbsp;&nbsp;&nbsp;
+                                        <input type="checkbox" value="5" name="update"><span>实时采播</span>&nbsp;&nbsp;&nbsp;
+                                        <input type="checkbox" value="6" name="update"><span>手机广播</span>
+                                    </div>
+                                </div>
+                            </form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+						<button type="button" class="btn btn-primary" onclick="updateMaintens()">保存</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!--删除 模态框（Modal） -->
+		<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="deleteModalLabel">账户管理-删除</h4>
+					</div>
+					<div class="modal-body">
+							<div class="form-group required">
+								<label class="control-label ">确定要删除这些用户吗？</label>
+							</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+						<button type="button" class="btn btn-primary" onclick="deleteMaintens()">确定</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+        <!--责任教室 模态框（Modal） -->
+        <div class="modal fade" id="queryclassModal" tabindex="-1" role="dialog" aria-labelledby="queryclassModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="queryclassModalLabel">账户管理-责任教室</h4>
+                    </div>
+                    <div class="modal-body">
+						<div>
+							<div class="layui-tab">
+								<ul class="layui-tab-title">
+									<li class="layui-this">列表</li>
+									<li class="layui-this">分组</li>
+								</ul>
+								<div class="layui-tab-content">
+									<div class="layui-tab-item layui-show" >
+                                        <ul id="tree">
+											<div class="layui-btn-group">
+											<button class="layui-btn" id="btn-expand">全部展开</button>
+											<button class="layui-btn" id="btn-fold">全部折叠</button>
+											<button class="layui-btn" id="btn-refresh">刷新表格</button>
+										</div>
+											<table id="table1" class="layui-table" lay-filter="table1"></table></ul>
+                                    </div>
+
+									<div class="layui-tab-item"><ul id="group">
+										<div class="layui-btn-group">
+											<button class="layui-btn" id="expand">全部展开</button>
+											<button class="layui-btn" id="fold">全部折叠</button>
+											<button class="layui-btn" id="refresh">刷新表格</button>
+										</div>
+										<table id="table2" class="layui-table" lay-filter="table2"></table>
+									</ul></div>
+								</div>
+							</div>
+						</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                        <button type="button" class="btn btn-primary" onclick="queryclassMaintens()">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script type="text/javascript" src="../js/accountmanagement.js"></script>
+
+	<script>
+		//模态框关闭时清除表单数据
+        $('#addModal').on('hidden.bs.modal', function (){
+            document.getElementById("frm").reset();
+        });
+
+        $('#updateModal').on('hidden.bs.modal', function (){
+            document.getElementById("unfrm").reset();
+        });
+	</script>
+
+
+	<!--<script type="text/html" id="bartimo">
+		{{#  if(d.authorityList.authority == '时钟管理'){ }}
+        <input type="checkbox" checked><span>时钟管理</span>
+		{{# }else{  }}
+        <input type="checkbox"><span>时钟管理</span>
+        {{# } }}
+	   &nbsp;
+		{{#  if(d.authorityList.authority == '打铃管理'){ }}
+		<input type="checkbox" checked><span>打铃管理</span>
+		{{# }else{  }}
+		<input type="checkbox" ><span>打铃管理</span>
+		{{# } }}
+	   &nbsp;
+		{{#  if(d.authorityList.authority == '信息发布'){ }}
+		<input type="checkbox" checked><span>信息发布</span>
+		{{# }else{  }}
+		<input type="checkbox" ><span>信息发布</span>
+		{{# } }}
+	   &nbsp;
+		{{#  if(d.authorityList.authority == '文件广播'){ }}
+		<input type="checkbox" checked><span>文件广播</span>
+		{{# }else{  }}
+		<input type="checkbox" ><span>文件广播</span>
+		{{# } }}
+	   &nbsp;
+		{{#  if(d.authorityList.authority == '实时采播'){ }}
+		<input type="checkbox" checked><span>实时采播</span>
+		{{# }else{  }}
+		<input type="checkbox" ><span>实时采播</span>
+		{{# } }}
+	   &nbsp;
+		{{#  if(d.authorityList.authority == '手机广播'){ }}
+		<input type="checkbox" checked><span>手机广播</span>
+		{{# }else{  }}
+		<input type="checkbox" ><span>手机广播</span>
+		{{# } }}
+	</script>-->
+
+        <script type="text/html" id="bartimo">
+            <input type="checkbox" name="show" value="1"><span>时钟管理</span>
+            &nbsp;
+            <input type="checkbox"  name="show" value="2"><span>打铃管理</span>
+            &nbsp;
+            <input type="checkbox"  name="show" value="3"><span>信息发布</span>
+            &nbsp;
+            <input type="checkbox"  name="show" value="4"><span>文件广播</span>
+            &nbsp;
+            <input type="checkbox"  name="show" value="5"><span>实时采播</span>
+            &nbsp;
+            <input type="checkbox"  name="show" value="6"><span>手机广播</span>
+        </script>
+        
+        <script type="text/javascript">
+		$(document).ready(function(){
+			$("#updatePwdImg").click(function(){
+				$("#updatePwd").trigger("click");
+			})
+			
+			$.ajax({
+				type:'post',
+				url:'../sign/getIdentity',
+				data:{},
+				success:function(result){
+					$("#identityImg").attr("title",result.identity);
+				},
+				error:function(){
+					layer.msg("ajax错误");
+				}
+			})
+		});
+		
+		$("#signOutImg").click(function(){
+			$.ajax({
+				type:'post',
+				url:'../sign/logout',
+				data:{},
+				success:function(result){
+					if(result.code==0){
+						layer.msg(result.msg);
+						location.href="../html/login.html"
+					}
+				},
+				error:function(){
+					layer.msg("退出失败");
+				}
+			})
+		});
+	</script>
+
+	</body>
+</html>

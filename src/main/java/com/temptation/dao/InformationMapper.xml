@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"   
+		"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.temptation.dao.InformationMapper">
+	<select id="queryInformations" parameterType="long" resultType="com.temptation.pojo.Information">
+		SELECT * FROM `information` 
+		<if test="limitStart!=null and pageSize!=null">
+		LIMIT #{limitStart},#{pageSize}
+		</if>
+	</select>
+	
+	<delete id="deleteInformation" parameterType="long">
+		DELETE  FROM `information` WHERE `id`=#{id}
+	</delete>
+	
+	<select id="queryInformationById" parameterType="long" resultType="com.temptation.pojo.Information">
+		SELECT title,content FROM `information` WHERE `id`=#{id}
+	</select>
+	
+	<update id="updateInformationById">
+	UPDATE `information` set title=#{title},content=#{content} WHERE id=#{id}
+	</update>
+	
+	<insert id="addInformation">
+	INSERT INTO `information`(title,content,publisher,releaseTime,releaseMethod,terminal)values(#{title},#{content},#{publisher},#{releaseTime},#{releaseMethod},#{terminal})
+	</insert>
+	
+	<select id="queryInformationsNums" resultType="long">
+	SELECT COUNT(id) FROM `information` 
+	</select>
+</mapper>	

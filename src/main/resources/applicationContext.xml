@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+						   http://www.springframework.org/schema/beans/spring-beans.xsd
+						   http://www.springframework.org/schema/context
+						   http://www.springframework.org/schema/context/spring-context.xsd
+						   http://www.springframework.org/schema/tx
+						   http://www.springframework.org/schema/tx/spring-tx.xsd
+						   http://www.springframework.org/schema/mvc
+						   http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+	<!-- 1.全局扫描注解 -->
+	<context:component-scan base-package="com.temptation" />
+	<!-- 2.配置spingMVC注解驱动 -->
+	<mvc:annotation-driven/>
+	<mvc:default-servlet-handler/>
+	<!-- 3.配置数据源 -->
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName"
+			value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://192.168.31.209:3306/broadcast?characterEncoding=utf-8" />
+		<property name="username" value="college" />
+		<property name="password" value="college2019" />
+	</bean>
+	<!-- 4.配置SqlSessionFactoryBean -->
+	<bean id="sqlSessionFactoryBean"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 引用数据源 -->
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- 5.配置事务管理器 DataSourceTransactionManager -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<!-- 引用数据源 -->
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- 6. 配置事务管理器注解驱动 -->
+	<tx:annotation-driven
+		transaction-manager="transactionManager" />
+
+	<!-- 7.扫描mapper映射文件 -->
+	<bean id="mapperScannerConfigurer"
+		class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.temptation.dao" />
+	</bean>
+</beans>
+
+

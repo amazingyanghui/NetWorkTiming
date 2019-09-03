@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"   
+		"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.temptation.dao.RingingTaskMapper">
+	<resultMap type="com.temptation.pojo.Bellstate" id="bellstate">
+		<id column="id" property="id"/>
+		<result column="network_tatus" property="networkTatus"/>
+		<result column="bell_switch" property="bellSwitch"/>
+		<association property="listManagement" column="listManagement" javaType="com.temptation.pojo.ListManagement">
+			<id column="id" property="id"/>
+			<result column="name" property="name"/>
+			<result column="parent_id" property="parentId"/>
+			<result column="sortnum" property="sortnum"/>
+			<result column="level" property="level"/>
+		</association>
+		<association property="ringingTask" column="ringingTask" javaType="com.temptation.pojo.RingingTask">
+			<id column="tid" property="tid"/>
+			<result column="taskname" property="taskname"/>
+			<result column="creator" property="creator"/>
+			<result column="playedfile" property="playedfile"/>
+			<result column="starttime" property="starttime"/>
+			<result column="endtime" property="endtime"/>
+			<result column="taskstatus" property="taskstatus"/>
+			<result column="tasktype" property="tasktype"/>
+			<result column="priority" property="priority"/>
+			<result column="terminals" property="terminals"/>
+			<result column="volume" property="volume"/>
+			<result column="ringmode" property="ringmode"/>
+		</association>
+	</resultMap>
+
+
+
+	<select id="queryRingingTasks" resultType="com.temptation.pojo.RingingTask">
+		SELECT * FROM `ringingtask` WHERE `taskstatus` !=0
+		limit #{page},#{limit}
+	</select>
+
+	<select id="queryRingingTasksCount" resultType="java.lang.Integer">
+		SELECT count(1) FROM `ringingtask` WHERE `taskstatus` !=0
+	</select>
+
+	<insert id="addRingingTask" parameterType="com.temptation.pojo.RingingTask">
+		INSERT INTO `ringingtask`(`taskname`,`creator`,`playedfile`,`starttime`,`endtime`,`tasktype`,`priority`,`terminals`,`volume`)
+		VALUES(#{taskname},#{creator},#{playedfile},#{starttime},#{endtime},#{tasktype},#{priority},#{terminals},#{volume})
+	</insert>
+	<select id="queryTerByID" parameterType="int" resultType="com.temptation.pojo.Terminal">
+		SELECT * FROM terminal t WHERE t.`tid`=#{terminalId}
+	</select>
+	<update id="delTaskById" parameterType="int">
+		UPDATE `ringingtask` SET `taskstatus`=0 WHERE `tid`=#{taskId}
+	</update>
+	
+	<update id="openTask" parameterType="int">
+		UPDATE `ringingtask` SET `taskstatus`=1 WHERE `tid`=#{taskId}
+	</update>
+	
+	<update id="closeTask" parameterType="int">
+		UPDATE `ringingtask` SET `taskstatus`=2 WHERE `tid`=#{taskId}
+	</update>
+	
+	<update id="updateVolume" parameterType="int">
+		UPDATE `ringingtask` SET `volume`=#{volume} WHERE `tid`=#{taskId}
+	</update>
+
+	<select id="queryAllBellstate" resultMap="bellstate">
+		SELECT b.*,lm.*,r.*
+		FROM bellstate b
+		LEFT JOIN list_management lm on b.maintenance_id=lm.id
+		LEFT JOIN ringingtask r on b.ringingtask_id=r.tid
+		<if test="listManagementid!=null and listManagementid!=''">
+			where FIND_IN_SET(lm.id,queryChildrenAreaInfo(#{listManagementid}))
+		</if>
+		limit #{page},#{limit}
+	</select>
+
+	<select id="queryAllBellstateCount" resultType="java.lang.Integer">
+		SELECT count(1)
+		FROM bellstate b
+		LEFT JOIN list_management lm on b.maintenance_id=lm.id
+		LEFT JOIN ringingtask r on b.ringingtask_id=r.tid
+		<if test="listManagementid!=null and listManagementid!=''">
+			where FIND_IN_SET(lm.id,queryChildrenAreaInfo(#{listManagementid}))
+		</if>
+	</select>
+</mapper>

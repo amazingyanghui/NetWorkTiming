@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"   
+		"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.temptation.dao.MonitoringLogMapper">
+	<resultMap type="com.temptation.pojo.MonitoringLog" id="monitoringLog">
+		<id column="id" property="id"/>
+		<result column="equipment_id" property="equipmentId"/>
+		<result column="fault_time" property="faultTime"/>
+		<result column="equipment_ip" property="equipmentIp"/>
+		<result column="host" property="host"/>
+		<result column="maintenance_id" property="maintenanceId"/>
+		<result column="abnormal_reason" property="abnormalReason"/>
+		<association property="maintenance" column="maintenance" javaType="com.temptation.pojo.Maintenance">
+			<id column="mid" property="mid"/>
+			<result column="regname" property="regname"/>
+			<result column="regarea" property="regarea"/>
+			<result column="seatnum" property="seatnum"/>
+			<result column="region" property="region"/>
+			<result column="sortnum" property="sortnum"/>
+		</association>
+	</resultMap>
+
+
+	<select id="queryAllMonitoringLog" resultMap="monitoringLog">
+		select ml.*,m.*
+		from monitoring_log ml LEFT JOIN maintenance m on ml.maintenance_id=m.mid where 1=1
+		<if test="startTime!=null and startTime!=''">
+			and ml.fault_time &gt;= #{startTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime!=null and endTime!=''">
+			and ml.fault_time &lt;= #{endTime,jdbcType=TIMESTAMP}
+		</if>
+		limit #{page},#{limit}
+	</select>
+
+	<select id="queryAllMonitoringLogCount" resultType="java.lang.Integer">
+		select count(1)
+		from monitoring_log ml LEFT JOIN maintenance m on ml.maintenance_id=m.mid where 1=1
+		<if test="startTime!=null and startTime!=''">
+			and ml.fault_time &gt;= #{startTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime!=null and endTime!=''">
+			and ml.fault_time &lt;= #{endTime,jdbcType=TIMESTAMP}
+		</if>
+	</select>
+
+</mapper>
+		

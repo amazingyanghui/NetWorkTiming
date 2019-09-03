@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="NetWorkTiming:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>NetWorkTiming</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="NetWorkTiming.war">
+      <element id="artifact" artifact-name="NetWorkTiming:war exploded" />
+    </root>
+  </artifact>
+</component>

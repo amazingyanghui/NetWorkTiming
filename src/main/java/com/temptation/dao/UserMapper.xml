@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"   
+		"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+		
+<mapper namespace="com.temptation.dao.UserMapper">
+	<resultMap type="com.temptation.pojo.User" id="user">
+		<id column="id" property="id"/>
+		<result column="username" property="username"/>
+		<result column="password" property="password"/>
+		<result column="name" property="name"/>
+		<result column="role" property="role"/>
+	</resultMap>
+
+	<resultMap type="com.temptation.pojo.Authority" id="authority">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+	</resultMap>
+
+	<resultMap type="com.temptation.pojo.UserAsAuthority" id="userAsAuthority">
+		<id column="id" property="id"/>
+		<result column="user_id" property="userId"/>
+		<result column="authority_id" property="authorityId"/>
+	</resultMap>
+
+	<resultMap type="com.temptation.pojo.UserAsClass" id="userAsClass">
+		<id column="id" property="id"/>
+		<result column="user_id" property="userId"/>
+		<result column="list_id" property="listId"/>
+		<result column="group_id" property="groupId"/>
+	</resultMap>
+
+
+
+	<select id="queryAllUser" resultType="com.temptation.pojo.User">
+		select * from user
+		<if test="name!=null and name!=''">
+			where name like concat('%', #{name},'%')
+		</if>
+		limit #{page},#{limit}
+	</select>
+
+	<select id="queryAllUserCount" resultType="java.lang.Integer">
+		select count(1) from user
+		<if test="_parameter!=null and _parameter!=''">
+			where name like concat('%', #{name},'%')
+		</if>
+	</select>
+
+	<select id="queryAuthorityByUserId" resultType="com.temptation.pojo.Authority">
+		select a.*
+		from authority a LEFT JOIN user_as_authority uaa on uaa.authority_id=a.id
+		where uaa.user_id=#{userId}
+	</select>
+	
+	<select id="queryPwdByName" resultType="com.temptation.pojo.User" parameterType="string">
+		SELECT `username`,`password`,`name` FROM `user` WHERE `username`=#{userName}
+	</select>
+	<update id="updatePwd" parameterType="string">
+		UPDATE `user` SET `password`=#{passWord} WHERE `username`=#{userName}
+	</update>
+
+
+
+
+	<insert id="addUser" parameterType="com.temptation.pojo.User">
+		insert into `user` (username,password,`name`,role) VALUES(#{username},#{password},#{name},#{role})
+		<selectKey resultType="java.lang.Integer" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	</insert>
+
+	<insert id="addUserAsAuthority" parameterType="java.lang.Integer">
+		insert into user_as_authority (user_id,authority_id) VALUES(#{userId},#{authorityId})
+	</insert>
+
+	<select id="queryUserById" resultType="com.temptation.pojo.User" parameterType="java.lang.Integer">
+		SELECT * FROM `user` WHERE id=#{id}
+	</select>
+
+	<update id="updateUser" parameterType="com.temptation.pojo.User">
+		UPDATE `user` SET `password`=#{password},`username`=#{username},`name`=#{name},role=#{role} where id=#{id}
+	</update>
+
+	<delete id="deleteUserById">
+	DELETE FROM `user` where id=#{id}
+	</delete>
+
+	<delete id="deleteUserAsAuthority">
+		DELETE FROM user_as_authority where user_id=#{userId}
+	</delete>
+
+	<select id="queryClassByUserId" resultMap="userAsClass" parameterType="java.lang.Integer">
+		select * from user_as_class uac where uac.user_id=#{userId}
+	</select>
+
+	<delete id="deleteClassByUserId">
+		DELETE FROM user_as_class where user_id=#{userId}
+	</delete>
+
+	<insert id="addUserAsClass" parameterType="java.lang.Integer">
+		insert into user_as_class (user_id,list_id) VALUES(#{userId},#{listId})
+	</insert>
+	
+	<select id="queryRoleByName" parameterType="string" resultType="string">
+		select role from user where name=#{name}
+	</select>
+</mapper>		
+
+
+
+

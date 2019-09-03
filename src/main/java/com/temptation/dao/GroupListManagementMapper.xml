@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"   
+		"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.temptation.dao.GroupListManagementMapper">
+	<resultMap type="com.temptation.pojo.GroupManagement" id="groupManagement">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="parent_id" property="parentId"/>
+		<result column="sortnum" property="sortnum"/>
+		<result column="level" property="level"/>
+	</resultMap>
+
+	<resultMap type="com.temptation.pojo.ListManagement" id="listManagement">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="parent_id" property="parentId"/>
+		<result column="sortnum" property="sortnum"/>
+		<result column="level" property="level"/>
+	</resultMap>
+
+	<select id="queryAllGroupManagement" resultMap="groupManagement">
+		SELECT * FROM group_management ORDER BY sortnum 
+	</select>
+
+	<select id="queryAllListManagement" resultMap="listManagement">
+		SELECT * FROM list_management ORDER BY sortnum 
+	</select>
+
+	<insert id="addGroupManagement" parameterType="com.temptation.pojo.GroupManagement">
+		insert into group_management (name,parent_id,sortnum,`level`) VALUES(#{name},#{parentId},#{sortnum},#{level})
+	</insert>
+
+	<select id="queryGroupManagementById" resultType="com.temptation.pojo.GroupManagement">
+		SELECT * FROM group_management where id=#{id}
+	</select>
+
+	<update id="updateGroupManagement" parameterType="com.temptation.pojo.GroupManagement">
+		update group_management set name=#{name},parent_id=#{parentId},sortnum=#{sortnum} where id=#{id}
+	</update>
+
+	<select id="queryGroupManagementByParentId" resultType="com.temptation.pojo.GroupManagement">
+		select * from group_management where parent_id=#{parentId}
+	</select>
+
+	<delete id="deleteGroupManagement">
+		DELETE FROM group_management where id=#{id}
+	</delete>
+
+	<insert id="addListManagement" parameterType="com.temptation.pojo.ListManagement">
+		insert into list_management (name,parent_id,sortnum,`level`) VALUES(#{name},#{parentId},#{sortnum},#{level})
+	</insert>
+
+	<select id="queryListManagementById" resultType="com.temptation.pojo.ListManagement">
+		SELECT * FROM list_management where id=#{id}
+	</select>
+
+	<update id="updateListManagement" parameterType="com.temptation.pojo.ListManagement">
+		update list_management set name=#{name},parent_id=#{parentId},sortnum=#{sortnum} where id=#{id}
+	</update>
+
+	<select id="queryListManagementByParentId" resultType="com.temptation.pojo.ListManagement">
+		select * from list_management where parent_id=#{parentId}
+	</select>
+
+	<delete id="deleteListManagement">
+		DELETE FROM list_management where id=#{id}
+	</delete>
+	
+	<select id="queryManagementByParentId" parameterType="long" resultType="com.temptation.pojo.ListManagement">
+		select id,name,isHaveTerminal from list_management where parent_id in(select id from list_management where parent_id in(select id from list_management where parent_id=#{id})) and level=4
+		union all
+		select id,name,isHaveTerminal from list_management where parent_id in (select id from list_management where parent_id=#{id}) and level=4
+		union all
+		select id,name,isHaveTerminal from list_management where parent_id=#{id} and level=4
+	</select>
+	
+	<select id="queryGroupByParentId" parameterType="long" resultType="com.temptation.pojo.GroupManagement">
+		select id,name,isHaveTerminal from group_management where parent_id in(select id from group_management where parent_id in(select id from group_management where parent_id=#{id}))and level=4
+		union all
+		select id,name,isHaveTerminal from group_management where parent_id in (select id from group_management where parent_id=#{id}) and level=4
+		union all
+		select id,name,isHaveTerminal from group_management where parent_id=#{id} and level=4
+	</select>
+	
+	<select id="queryManagementsL4" resultType="com.temptation.pojo.ListManagement">
+		select id,name,isHaveTerminal from list_management where level=4
+	</select>
+	
+	<select id="queryGroupsL4" resultType="com.temptation.pojo.ListManagement">
+		select id,name,isHaveTerminal from group_management where level=4
+	</select>
+</mapper>		

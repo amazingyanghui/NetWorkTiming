@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"   
+		"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.temptation.dao.ParameterMapper">
+	<select id="queryParameters" parameterType="long" resultType="com.temptation.pojo.Parameter">
+		SELECT * FROM `parameter`
+		<if test="limitStart!=null and pageSize!=null">
+		LIMIT #{limitStart},#{pageSize}
+		</if>
+	</select>
+	
+	<select id="queryParameterById" parameterType="long" resultType="com.temptation.pojo.Parameter">
+		SELECT * FROM `parameter` WHERE id=#{id}
+	</select>
+	
+	<insert id="addParameter">
+		INSERT INTO `parameter`(keyName,pattern,parameterValue,defaultValue,describel)values(#{keyName},#{pattern},#{parameterValue},#{defaultValue},#{describel})
+	</insert>
+	
+	<update id="updateParameter">
+		UPDATE `parameter` SET keyName=#{keyName},pattern=#{pattern},parameterValue=#{parameterValue},defaultValue=#{defaultValue},describel=#{describel}WHERE id=#{id}
+	</update>
+	
+	<select id="queryParameterNums" resultType="long">
+		SELECT COUNT(id) FROM `parameter`
+	</select>
+</mapper>	

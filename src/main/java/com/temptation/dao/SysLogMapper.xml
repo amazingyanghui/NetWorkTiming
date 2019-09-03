@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"   
+		"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.temptation.dao.SysLogMapper">
+	<select id="queryByName" resultType="com.temptation.pojo.SysLog">
+		SELECT `sid`,`accname`,`content`,`contime` FROM sys_log WHERE `accname`=#{userName}
+		<if test="map.pageNo!=null  and map.limit!=null ">
+		 LIMIT #{map.pageNo},#{map.limit}
+		</if>
+	</select>
+	<insert id="addSysLog" parameterType="com.temptation.pojo.SysLog">
+		INSERT INTO `sys_log`(`accname`,`content`) VALUES(#{accname},#{content})
+	</insert>
+</mapper>
+		
